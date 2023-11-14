@@ -1,0 +1,194 @@
+openapi: 3.0.0
+info:
+  description: API specification for authentication operations
+  version: 1.0.0
+  title: Authentication API
+
+tags:
+- name: Authentication
+  description: Authentication operations
+
+paths:
+
+  /auth/register:
+    post:
+      tags:
+      - Authentication
+      summary: Registers an user in the platform
+      requestBody:
+        description: Data to register the user
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: example@example.com
+                password:
+                  type: string
+                  example: examplepassword
+                role:
+                  type: string
+                  enum:
+                    - CONSUMER
+                    - SUPPLIER
+                  example: SUPPLIER
+        required: true
+      responses:
+        201:
+          description: User registered in with success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterSuccessMessage'
+        400:
+          description: Some data provided is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+
+  /auth/login:
+    post:
+      tags:
+      - Authentication
+      summary: Logins an user in the platform
+      requestBody:
+        description: Data to login the user
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: example@example.com
+                password:
+                  type: string
+                  example: examplepassword
+        required: true
+      responses:
+        201:
+          description: User logged in with success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginSuccessMessage'
+        401:
+          description: The email or password are incorrect
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+
+  /auth/refresh:
+    put:
+      tags:
+      - Authentication
+      summary: Refreshs an user access token
+      requestBody:
+        description: Data to login the user
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  example: 70df3403270e42969278e1878c3f49e2
+        required: true
+      responses:
+        201:
+          description: User access token refreshed with success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshSuccessMessage'
+        401:
+          description: An error occured while authenticating the user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+
+components:
+  schemas:
+    ErrorMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Different for each endpoint
+        uri:
+          type: string
+          example: Different for each endpoint
+        timestamp:
+          type: string
+          example: 01-01-1970 10:00:00
+
+    LoginSuccessMessage:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            accessToken:
+              type: string
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+            refreshToken:
+              type: string
+              example: 70df3403270e42969278e1878c3f49e2
+        message:
+          type: string
+          example: User logged in with success
+        uri:
+          type: string
+          example: /login
+        timestamp:
+          type: string
+          example: 01-01-1970 10:00:00
+
+    RegisterSuccessMessage:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            email:
+              type: string
+              example: example@example.com
+            token:
+              type: string
+              enum:
+                - CONSUMER
+                - SUPPLIER
+              example: SUPPLIER
+        message:
+          type: string
+          example: User registered in with success
+        uri:
+          type: string
+          example: /register
+        timestamp:
+          type: string 
+          example: 01-01-1970 10:00:00         
+
+    RefreshSuccessMessage:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            accessToken:
+              type: string
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+        message:
+          type: string
+          example: User access token refreshed with success
+        uri:
+          type: string
+          example: /refresh
+        timestamp:
+          type: string
+          example: 01-01-1970 10:00:00          
